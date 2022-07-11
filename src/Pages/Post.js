@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams, NavLink } from "react-router-dom";
+import Loader from "../components/Loader";
 
 /*
     On clicking link in PostPreview component navigate to /post/:id, which shows the Post Page.
@@ -16,13 +18,41 @@ import React from "react";
         </ul>
 
  */
-const Post = ({ele}) => {
-    return (
-        <div className="post">
-           <h3>{ele.title}</h3>
-            <p>{ele.body}</p>
-        </div>
-    );
-};
+export const Post = () => {
+  const { id } = useParams();
+  const [data, setData] = useState(null);
+  const [authorName, setAuthor] = useState(null);
+  const [isLoading, setLoading] = useState(true);
 
-export { Post };
+  const loadData = () => {
+    setLoading(true);
+    fetch("https://jsonplaceholder.typicode.com/posts/" + id)
+      .then((response) => response.json())
+      .then((json) => {
+        setData(json);
+        fetch("https://jsonplaceholder.typicode.com/users/" + json.userId)
+          .then((response) => response.json())
+          .then((author) => {
+            setAuthor(author.name);
+          })
+          .catch((err) => console.log(err));
+        setLoading(false);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+  return isLoading ? (
+    <Loader />
+  ) : (
+    <div id="post">
+      <h1 className="post-id">Post id:- {data.id}</h1>
+      <h2 className="post-title">{data.title}</h2>
+      <p className="post-body">{data.body}</p>
+      <p className="post-author">{authorName}</p>
+      <NavLink to="/">Back Home</NavLink>
+    </div>
+  );
+};
