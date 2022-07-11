@@ -16,12 +16,13 @@ import React from "react";
         </ul>
 
  */
-
-export const Post = () => {
-
+const Post = ({ele}) => {
     return (
-        <div id="post">
-
+        <div className="post">
+           <h3>{ele.title}</h3>
+            <p>{ele.body}</p>
         </div>
-    )
-}
+    );
+};
+
+export { Post };
